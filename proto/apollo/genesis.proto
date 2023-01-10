@@ -1,0 +1,14 @@
+syntax = "proto3";
+package apollo.apollo;
+
+import "gogoproto/gogo.proto";
+import "apollo/params.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "apollo/x/apollo/types";
+
+// GenesisState defines the apollo module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  // this line is used by starport scaffolding # genesis/proto/state
+}
