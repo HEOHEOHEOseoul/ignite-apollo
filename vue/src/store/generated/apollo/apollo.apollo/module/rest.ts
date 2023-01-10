@@ -14,6 +14,10 @@
  */
 export type ApolloParams = object;
 
+export interface ApolloQueryApolloResponse {
+  text?: string;
+}
+
 /**
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
@@ -229,6 +233,22 @@ export class HttpClient<SecurityDataType = unknown> {
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryApollo
+   * @summary Queries a list of Apollo items.
+   * @request GET:/apollo/apollo/apollo
+   */
+  queryApollo = (params: RequestParams = {}) =>
+    this.request<ApolloQueryApolloResponse, RpcStatus>({
+      path: `/apollo/apollo/apollo`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
   /**
    * No description
    *

@@ -13,6 +13,12 @@ export interface QueryParamsResponse {
   params: Params | undefined;
 }
 
+export interface QueryApolloRequest {}
+
+export interface QueryApolloResponse {
+  text: string;
+}
+
 const baseQueryParamsRequest: object = {};
 
 export const QueryParamsRequest = {
@@ -110,10 +116,108 @@ export const QueryParamsResponse = {
   },
 };
 
+const baseQueryApolloRequest: object = {};
+
+export const QueryApolloRequest = {
+  encode(_: QueryApolloRequest, writer: Writer = Writer.create()): Writer {
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryApolloRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseQueryApolloRequest } as QueryApolloRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): QueryApolloRequest {
+    const message = { ...baseQueryApolloRequest } as QueryApolloRequest;
+    return message;
+  },
+
+  toJSON(_: QueryApolloRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: DeepPartial<QueryApolloRequest>): QueryApolloRequest {
+    const message = { ...baseQueryApolloRequest } as QueryApolloRequest;
+    return message;
+  },
+};
+
+const baseQueryApolloResponse: object = { text: "" };
+
+export const QueryApolloResponse = {
+  encode(
+    message: QueryApolloResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.text !== "") {
+      writer.uint32(10).string(message.text);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryApolloResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseQueryApolloResponse } as QueryApolloResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.text = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryApolloResponse {
+    const message = { ...baseQueryApolloResponse } as QueryApolloResponse;
+    if (object.text !== undefined && object.text !== null) {
+      message.text = String(object.text);
+    } else {
+      message.text = "";
+    }
+    return message;
+  },
+
+  toJSON(message: QueryApolloResponse): unknown {
+    const obj: any = {};
+    message.text !== undefined && (obj.text = message.text);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<QueryApolloResponse>): QueryApolloResponse {
+    const message = { ...baseQueryApolloResponse } as QueryApolloResponse;
+    if (object.text !== undefined && object.text !== null) {
+      message.text = object.text;
+    } else {
+      message.text = "";
+    }
+    return message;
+  },
+};
+
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Parameters queries the parameters of the module. */
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
+  /** Queries a list of Apollo items. */
+  Apollo(request: QueryApolloRequest): Promise<QueryApolloResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -125,6 +229,12 @@ export class QueryClientImpl implements Query {
     const data = QueryParamsRequest.encode(request).finish();
     const promise = this.rpc.request("apollo.apollo.Query", "Params", data);
     return promise.then((data) => QueryParamsResponse.decode(new Reader(data)));
+  }
+
+  Apollo(request: QueryApolloRequest): Promise<QueryApolloResponse> {
+    const data = QueryApolloRequest.encode(request).finish();
+    const promise = this.rpc.request("apollo.apollo.Query", "Apollo", data);
+    return promise.then((data) => QueryApolloResponse.decode(new Reader(data)));
   }
 }
 
